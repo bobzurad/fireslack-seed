@@ -40,19 +40,39 @@ angular
       })
       .state('login', {
         url: '/login',
-        controller: 'AuthCtrl as authCtrl',
         templateUrl: 'auth/login.html',
         resolve: {
           requireNoAuth: requireNoAuth
-        }
+        },
+        controller: 'AuthCtrl as authCtrl'
       })
       .state('register', {
         url: '/register',
-        controller: 'AuthCtrl as authCtrl',
         templateUrl: 'auth/register.html',
         resolve: {
           requireNoAuth: requireNoAuth
-        }
+        },
+        controller: 'AuthCtrl as authCtrl'
+      })
+      .state('profile', {
+        url: '/profile',
+        templateUrl: 'users/profile.html',
+        //resolve these dependencies before the controller instanciates
+        resolve: {
+          //if user is not authenticated, redirect them to home
+          auth: function($state, Users, Auth) {
+            return Auth.$requireAuth().catch(function() {
+              $state.go('home');
+            });
+          },
+          //authenticate user, then load their profile
+          profile: function(Users, Auth) {
+            return Auth.$requireAuth().then(function(auth) {
+              return Users.getProfile(auth.uid).$loaded();
+            });
+          }
+        },
+        controller: 'ProfileCtrl as profileCtrl'
       });
 
     $urlRouterProvider.otherwise('/');
