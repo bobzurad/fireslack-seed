@@ -8,6 +8,24 @@
  *
  * Main module of the application.
  */
+
+//Helper function:
+//for use with pages where authentication is not required.
+//if user is authenticted, redirect them to home.
+//else silent fail on authenication and display page.
+var requireNoAuth = function($state, Auth) {
+  return Auth.$requireAuth()
+    .then(
+      function(auth) {  //jshint ignore:line
+        $state.go('home');
+      },
+      function(error) { //jshint ignore:line
+        return;
+      }
+    );
+};
+
+//Main angular init
 angular
   .module('angularfireSlackApp', [
     'firebase',
@@ -22,13 +40,21 @@ angular
       })
       .state('login', {
         url: '/login',
-        templateUrl: 'auth/login.html'
+        controller: 'AuthCtrl as authCtrl',
+        templateUrl: 'auth/login.html',
+        resolve: {
+          requireNoAuth: requireNoAuth
+        }
       })
       .state('register', {
         url: '/register',
-        templateUrl: 'auth/register.html'
+        controller: 'AuthCtrl as authCtrl',
+        templateUrl: 'auth/register.html',
+        resolve: {
+          requireNoAuth: requireNoAuth
+        }
       });
 
     $urlRouterProvider.otherwise('/');
   })
-  .constant('FirebaseUrl', 'https://slack.firebaseio.com/');
+  .constant('FirebaseUrl', 'https://zslack.firebaseio.com/');

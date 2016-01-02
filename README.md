@@ -1,3 +1,6 @@
+My progress while working through Thinkster's [AngularFire Slack Tutorial](https://thinkster.io/angularfire-slack-tutorial)
+Rather than use this repo, I suggest you follow their tutorial.
+
 # angularfire-slack
 
 This project is generated with [yo angular generator](https://github.com/yeoman/generator-angular)
