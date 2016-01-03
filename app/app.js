@@ -34,10 +34,25 @@ angular
   ])
   .config(function ($stateProvider, $urlRouterProvider) {
     $stateProvider
+      //home page
       .state('home', {
         url: '/',
-        templateUrl: 'home/home.html'
+        templateUrl: 'home/home.html',
+        resolve: {
+          requireNoAuth: function($state, Auth) {
+            //if user is authenticted, send them to channels page
+            return Auth.$requireAuth().then(
+              function(auth) {  //jshint ignore:line
+                $state.go('channels');
+              },
+              function(error) { //jshint ignore:line
+                return;
+              }
+            );
+          }
+        }
       })
+      //login page
       .state('login', {
         url: '/login',
         templateUrl: 'auth/login.html',
@@ -46,6 +61,7 @@ angular
         },
         controller: 'AuthCtrl as authCtrl'
       })
+      //registration page
       .state('register', {
         url: '/register',
         templateUrl: 'auth/register.html',
@@ -54,6 +70,7 @@ angular
         },
         controller: 'AuthCtrl as authCtrl'
       })
+      //profile page
       .state('profile', {
         url: '/profile',
         templateUrl: 'users/profile.html',
@@ -73,6 +90,44 @@ angular
           }
         },
         controller: 'ProfileCtrl as profileCtrl'
+      })
+      //channels page
+      .state('channels', {
+        url: '/channels',
+        templateUrl: 'channels/index.html',
+        resolve: {
+          channels: function(Channels) {
+            return Channels.$loaded();
+          },
+          profile: function($state, Auth, Users) {
+            return Auth.$requireAuth().then(
+              function(auth) {
+                //user is authenticated, get profile
+                return Users.getProfile(auth.uid).$loaded().then(
+                  function(profile) {
+                    //if user has no displayName, send them to profile page
+                    if (profile.displayName) {
+                      return profile;
+                    } else {
+                      $state.go('profile');
+                    }
+                  },
+                  function(error) {}  //jshint ignore:line
+                );
+              },
+              function(error) { //jshint ignore:line
+                //user is not authenticted, go home
+                $state.go('home');
+              }
+            );
+          }
+        },
+        controller: 'ChannelsCtrl as channelsCtrl'
+      })
+      .state('channels.create', {
+        url: '/create',
+        templateUrl: 'channels/create.html',
+        controller: 'ChannelsCtrl as channelsCtrl'
       });
 
     $urlRouterProvider.otherwise('/');
