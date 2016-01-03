@@ -24,10 +24,8 @@ angular
           channelsCtrl.createChannel = function() {
             //clear out new channel name after adding new one
             channelsCtrl.channels.$add(channelsCtrl.newChannel).then(
-              function() {
-                channelsCtrl.newChannel = {
-                  name: ''
-                };
+              function(ref) {
+                $state.go('channels.messages', { channelId: ref.key()});
               }
             );
           };

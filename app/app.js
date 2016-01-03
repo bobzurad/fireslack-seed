@@ -124,10 +124,25 @@ angular
         },
         controller: 'ChannelsCtrl as channelsCtrl'
       })
+      //create channel page
       .state('channels.create', {
         url: '/create',
         templateUrl: 'channels/create.html',
         controller: 'ChannelsCtrl as channelsCtrl'
+      })
+      //channel messages page
+      .state('channels.messages', {
+        url: '/{channelId}/messages',
+        templateUrl: 'channels/messages.html',
+        resolve: {
+          messages: function($stateParams, Messages) {
+            return Messages.forChannel($stateParams.channelId).$loaded();
+          },
+          channelName: function($stateParams, Channels) {
+            return '#' + Channels.$getRecord($stateParams.channelId).name;
+          }
+        },
+        controller: 'MessagesCtrl as messagesCtrl'
       });
 
     $urlRouterProvider.otherwise('/');
