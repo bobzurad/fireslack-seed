@@ -13,9 +13,16 @@ angular
           channelsCtrl.getGravatar = Users.getGravatar;
           channelsCtrl.users = Users.all;
 
+          Users.setOnline(profile.$id);
+
           channelsCtrl.logout = function() {
-            Auth.$unauth();
-            $state.go('home');
+            channelsCtrl.profile.online = null;
+            channelsCtrl.profile.$save().then(
+              function() {
+                Auth.$unauth();
+                $state.go('home');                
+              }
+            );
           };
 
           channelsCtrl.newChannel = {
