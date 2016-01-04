@@ -14,7 +14,7 @@ angular
             return $firebaseObject(usersRef.child(uid));
           },
           getDisplayName: function(uid) {
-            return users.$getRecord(uid).dislayName;
+            return users.$getRecord(uid).displayName;
           },
           getGravatar: function(uid) {
             return '//www.gravatar.com/avatar/' + users.$getRecord(uid).emailHash;
